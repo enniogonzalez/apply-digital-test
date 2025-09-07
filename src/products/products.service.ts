@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product, ProductStatus } from './product.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
@@ -15,23 +15,23 @@ export class ProductsService {
 
   async deleteBySku(sku: string): Promise<void> {
     const result = await this.productRepository.update(
-      { sku },
+      { sku, status: Not(ProductStatus.Deleted) },
       { status: ProductStatus.Deleted, deletionDate: new Date() },
     );
 
     if (result.affected === 0) {
-      throw new NotFoundException(`Product with sku ${sku} not found`);
+      throw new NotFoundException(`Product not found`);
     }
   }
 
   async deleteById(id: string): Promise<void> {
     const result = await this.productRepository.update(
-      { id },
+      { id, status: Not(ProductStatus.Deleted) },
       { status: ProductStatus.Deleted, deletionDate: new Date() },
     );
 
     if (result.affected === 0) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new NotFoundException(`Product not found`);
     }
   }
 }
