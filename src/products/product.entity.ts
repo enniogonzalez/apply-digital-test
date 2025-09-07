@@ -27,6 +27,7 @@ export class Product {
 
   @Column({ type: 'timestamptz', nullable: true })
   deletionDate?: Date;
+
   @Column()
   model: string;
 
