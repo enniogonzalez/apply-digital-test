@@ -24,7 +24,13 @@ export class ProductsCronJob {
 
       if (productResponse?.items?.length) {
         productResponse.items.forEach((item) =>
-          promisesToSaveProducts.push(this.productsService.save(item.fields)),
+          promisesToSaveProducts.push(
+            this.productsService.save({
+              ...item.fields,
+              id: item.sys.id,
+              creationDate: new Date(item.sys.createdAt),
+            }),
+          ),
         );
       }
       skip += limit;

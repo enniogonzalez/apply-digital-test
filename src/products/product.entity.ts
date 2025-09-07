@@ -8,6 +8,9 @@ export enum ProductStatus {
 @Entity('products')
 export class Product {
   @Column('varchar', { primary: true, length: 50 })
+  id: string;
+
+  @Column('varchar', { unique: true, length: 50 })
   sku: string;
 
   @Column()
