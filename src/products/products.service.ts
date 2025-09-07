@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from './product.entity';
+import { Product, ProductStatus } from './product.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -10,7 +10,28 @@ export class ProductsService {
   ) {}
 
   async save(product: Partial<Product>): Promise<Product> {
-    console.log('Saving product:', product);
     return this.productRepository.save(product);
+  }
+
+  async deleteBySku(sku: string): Promise<void> {
+    const result = await this.productRepository.update(
+      { sku },
+      { status: ProductStatus.Deleted, deletionDate: new Date() },
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Product with sku ${sku} not found`);
+    }
+  }
+
+  async deleteById(id: string): Promise<void> {
+    const result = await this.productRepository.update(
+      { id },
+      { status: ProductStatus.Deleted, deletionDate: new Date() },
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
   }
 }
