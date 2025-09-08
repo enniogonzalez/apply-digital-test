@@ -26,4 +26,8 @@ async function bootstrap() {
   // that the database is populated without waiting for the first scheduled run.
   await app.get(ProductsCronJob).saveProductsFromApplyDigital();
 }
-bootstrap();
+bootstrap().catch((err) => {
+  // line added to fix linter error
+  console.error('Error during application bootstrap:', err);
+  process.exit(1);
+});
