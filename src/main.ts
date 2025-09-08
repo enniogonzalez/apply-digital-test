@@ -12,6 +12,15 @@ async function bootstrap() {
     .setTitle('Apply Digital API')
     .setDescription('API documentation for Apply Digital coding test')
     .setVersion('1.0.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Use the token as: Bearer <token>',
+      },
+      'bearer',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

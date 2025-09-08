@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ExternalProductsModule } from './external-products/external-products.module';
 import { CronjobsModule } from './cronjobs/cronjobs.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -26,8 +26,8 @@ import { ProductsModule } from './products/products.module';
     ExternalProductsModule,
     CronjobsModule,
     ProductsModule,
+    ReportsModule,
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
