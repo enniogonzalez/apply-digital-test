@@ -10,6 +10,10 @@ import {
   LessThanOrEqual,
 } from 'typeorm';
 import { ProductFiltersDto } from './dtos/product-filters.dto';
+import {
+  getDateAtBeginningOfDay,
+  getDateAtEndOfDay,
+} from 'src/utils/date.utils';
 
 @Injectable()
 export class ProductsService {
@@ -89,12 +93,12 @@ export class ProductsService {
           break;
         case 'minDate':
           where['createdAt'] = MoreThanOrEqual(
-            this.getDateAtBeginningOfDay(filters[field]),
+            getDateAtBeginningOfDay(filters[field]),
           );
           break;
         case 'maxDate':
           where['createdAt'] = LessThanOrEqual(
-            this.getDateAtEndOfDay(filters[field]),
+            getDateAtEndOfDay(filters[field]),
           );
           break;
         default:
@@ -103,17 +107,5 @@ export class ProductsService {
     }
 
     return where;
-  }
-
-  private getDateAtBeginningOfDay(dateString: string): Date {
-    const date = new Date(dateString);
-    date.setHours(0, 0, 0, 0);
-    return date;
-  }
-
-  private getDateAtEndOfDay(dateString: string): Date {
-    const date = new Date(dateString);
-    date.setHours(23, 59, 59, 999);
-    return date;
   }
 }
