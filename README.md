@@ -1,98 +1,120 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+## Apply Digital Test – API Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS + TypeORM + PostgreSQL service with product ingestion and simple reporting. Includes Swagger docs, linting, tests, and Docker Compose setup.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 1) Environment Setup (required first)
 
-## Description
+Create a `.env` file at the project root (you can start from `.env.example`) and fill the values. These are required for the app and the Docker containers to run correctly.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Required variables:
 
-## Project setup
+- PORT: HTTP port for the API (e.g. `3000`).
+- POSTGRES_HOST: DB host. Use `localhost` for local dev, `db` inside Docker.
+- POSTGRES_PORT: DB port (e.g. `5432`).
+- POSTGRES_USER: DB user.
+- POSTGRES_PASSWORD: DB password.
+- POSTGRES_DB: DB name.
+- JWT_TOKEN: The Bearer token required by all `/reports` endpoints.
+- CDN_BASE_URL
+- AD_SPACE_ID
+- AD_ENVIRONMENT_ID
+- AD_ACCESS_TOKEN
+- AD_CONTENT_TYPE_ID
 
-```bash
-$ npm install
-```
+Note: On startup the app tries to fetch products from an external source (Apply Digital/Contentful). If these values are not set or unreachable, the fetch step will simply not import products.
 
-## Compile and run the project
+## 2) Run with Docker Compose
+
+This is the simplest way to boot the entire stack (API + Postgres):
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+docker compose up
 ```
 
-## Run tests
+- API: http://localhost:${PORT}
+- Swagger UI: http://localhost:${PORT}/api/docs
+
+The image runs DB migrations automatically on container start, then launches the API.
+
+Stop everything:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker compose down
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Rebuild clean if needed:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker compose down -v
+docker compose up
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 3) Run locally (Node.js)
 
-## Resources
+Prerequisites: Node.js 22.x, a reachable Postgres instance, and the `.env` configured.
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+npm ci
+npm run migration:run
+npm run start:dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Swagger UI will be available at `http://localhost:${PORT}/api/docs`.
 
-## Support
+## 4) Swagger and Authorization
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Open Swagger UI at `/api/docs`.
+- Click “Authorize” and choose the `bearer` scheme.
+- For reports endpoints, use `Bearer <token>` where `<token>` is exactly the value of `JWT_TOKEN` from your `.env`.
 
-## Stay in touch
+## 5) Endpoints Overview
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Products
 
-## License
+- GET `/products`
+  - Returns a paginated list of products using filters.
+  - Common query params:
+    - Pagination: `page` (default 1), `limit` (default 5, max 5)
+    - Sorting: `orderBy` (e.g. `name`, `brand`, `price`), `sortOrder` (`ASC` | `DESC`)
+    - Text filters: `name`, `brand`, `model`, `category`, `color` (partial match)
+    - Range filters: `minPrice`, `maxPrice`, `minStock`, `maxStock`
+    - Date filters: `minDate`, `maxDate` (YYYY-MM-DD; inclusive day boundaries)
+  - Example: `/products?page=1&limit=5&orderBy=name&sortOrder=ASC&brand=Acme&minPrice=100`
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- DELETE `/products/:id`
+  - Soft-deletes a product by `id` (sets status to `Deleted`).
+  - Responses: `204 No Content` when deleted, `404 Not Found` if product does not exist.
+
+- DELETE `/products/sku/:sku`
+  - Soft-deletes a product by `sku`.
+  - Responses: `204 No Content`, `404 Not Found`.
+
+Auth: Products endpoints are public (no auth header required) for this exercise.
+
+### Reports
+
+The following endpoints require Bearer token, for simplicity, the token is not a signed JWT; it must match the value of `JWT_TOKEN` in your `.env`. In Swagger: click “Authorize”, paste `Bearer <JWT_TOKEN>`, then try the endpoint.
+
+- GET `/reports/percentage-products-deleted`
+- GET `/reports/percentage-products-not-deleted`
+- GET `/reports/products-by-category`
+
+## 6) Tests and Linting
+
+- Unit tests:
+
+  ```bash
+  npm test
+  ```
+
+- Linting and formatting:
+  ```bash
+  npm run lint
+  ```
+
+## 7) CI
+
+Two GitHub Actions are included:
+
+- CI - Tests: runs manually (should be triggered [here](https://github.com/enniogonzalez/apply-digital-test/actions/workflows/test.yml)).
+- CI - Lint: runs manually (should be triggered [here](https://github.com/enniogonzalez/apply-digital-test/actions/workflows/lint.yml)).
